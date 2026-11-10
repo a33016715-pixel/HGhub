@@ -1,36 +1,28 @@
 name: iPhone - unsigned IPA
-
 on:
-  workflow_dispatch:
-
+  workflow_dispatch: null
 permissions:
   contents: read
-
 jobs:
   build:
     runs-on: macos-15
     timeout-minutes: 60
     env:
       CI: "true"
-
     steps:
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
-
       - uses: pnpm/action-setup@v4
         with:
           version: 10
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
-
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-apple-ios
-
       - name: Install Apple build tools
         shell: bash
         run: |
@@ -38,12 +30,9 @@ jobs:
           command -v xcodegen >/dev/null || brew install xcodegen
           command -v pod >/dev/null || brew install cocoapods
           xcodebuild -version
-
       - run: pnpm install --frozen-lockfile
-
       - name: Generate iOS project
         run: pnpm tauri ios init --ci --skip-targets-install
-
       - name: Build device app without Apple credentials
         shell: bash
         run: |
@@ -362,7 +351,61 @@ jobs:
             log.end();
           }
           HGHUB_BUILD
+        id: build_app
+      - name: Show compiler errors in summary
+        if: always()
+        env:
+          BUILD_OUTCOME: ${{ steps.build_app.outcome }}
+        shell: bash
+        run: |
+          node --input-type=module <<'HGHUB_DIAGNOSTICS'
+          import { readFile, appendFile } from 'node:fs/promises';
+          import { randomUUID } from 'node:crypto';
 
+          const outcome = process.env.BUILD_OUTCOME || 'unknown';
+          const files = ['artifacts/ios/tauri.log', 'artifacts/ios/xcodebuild.log'];
+          const reports = [];
+          const errorPattern = /\berror(?:\[[A-Z]\d+\])?\s*:|\bfatal error\s*:|\bError \[tauri_cli|Arch specified by Xcode was invalid/i;
+          const sensitiveSetting = /(?:TOKEN|PASSWORD|SECRET|AUTHORIZATION|API_KEY)\s*[:=]/i;
+          for (const path of files) {
+            let content;
+            try { content = await readFile(path, 'utf8'); }
+            catch (error) { if (error.code === 'ENOENT') continue; throw error; }
+            const lines = content.replace(/\u001b\[[0-9;]*m/g, '').split(/\r?\n/);
+            const selected = new Set();
+            let count = 0;
+            for (let i = 0; i < lines.length && count < 6; i++) {
+              if (!errorPattern.test(lines[i])) continue;
+              count++;
+              for (let j = i; j < Math.min(i + 9, lines.length); j++) {
+                if (!sensitiveSetting.test(lines[j]) && !/^\s*export\s/.test(lines[j])) selected.add(j);
+              }
+            }
+            const excerpt = [...selected].sort((a, b) => a - b).map(i => lines[i]).join('\n').slice(0, 9000);
+            if (excerpt) reports.push({ path, excerpt });
+          }
+
+          let summary = `## iPhone build diagnostics\n\nBuild step: **${outcome}**.\n\n`;
+          if (outcome === 'success') {
+            summary += 'Native build and unsigned IPA packaging succeeded. The artifact still needs local signing and an iPhone test.\n';
+          } else if (reports.length) {
+            for (const report of reports) {
+              summary += `### ${report.path}\n\n\`\`\`text\n${report.excerpt.replace(/`/g, "'")}\n\`\`\`\n\n`;
+              const stopToken = randomUUID();
+              console.log(`::stop-commands::${stopToken}`);
+              console.log(`${report.path}:\n${report.excerpt}`);
+              console.log(`::${stopToken}::`);
+              if (outcome === 'failure') {
+                const annotation = report.excerpt.slice(0, 3000).replace(/%/g, '%25').replace(/\r/g, '%0D').replace(/\n/g, '%0A');
+                console.log(`::error title=iPhone compiler details::${annotation}`);
+              }
+            }
+          } else {
+            summary += 'No compiler error excerpt was found in the available logs. Check the failed step above and the HGhub-iPhone-build-logs artifact when available.\n';
+          }
+          if (process.env.GITHUB_STEP_SUMMARY) await appendFile(process.env.GITHUB_STEP_SUMMARY, summary);
+          console.log(`Build diagnostic summary ready (outcome: ${outcome}).`);
+          HGHUB_DIAGNOSTICS
       - name: Save IPA for local signing
         uses: actions/upload-artifact@v4
         with:
@@ -372,7 +415,6 @@ jobs:
             artifacts/ios/build-info.json
           if-no-files-found: error
           retention-days: 7
-
       - name: Save build logs
         if: always()
         uses: actions/upload-artifact@v4
