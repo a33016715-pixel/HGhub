@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f4ef">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="description" content="在手機匯入影片、標記時間點、整理與匯出研究筆記。影片與筆記保存在此裝置。">
+  <title>映記 · 影片研究工作台</title>
+  <style>
+:root{color-scheme:light;--paper:#f5f4ef;--panel:#fffefa;--ink:#202f33;--muted:#78817f;--line:#e4e6de;--green:#235a50;--green-pale:#e9f0e9;--orange:#f1b06c;--radius:20px;font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang TC","Microsoft JhengHei",sans-serif;font-synthesis:none}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-size:14px;line-height:1.6}button,input,textarea,select{font:inherit}button,a,input,textarea,select{-webkit-tap-highlight-color:transparent}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.4}button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #bc7738;outline-offset:3px}button{color:inherit}button,a{touch-action:manipulation}.hidden,[hidden]{display:none!important}.grow{flex:1;min-width:0}.muted{color:var(--muted)}.topbar{max-width:1440px;margin:auto;padding:28px 4.5%;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:12px}.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);font-weight:750;font-size:23px;letter-spacing:2px}.brand small{font-size:9px;font-weight:600;letter-spacing:2px;display:block;line-height:1.3;color:var(--muted)}.brand-icon{background:var(--green);color:#fff7e3;border-radius:11px;font-size:26px;line-height:44px;text-align:center;width:44px;transform:rotate(-4deg)}.button{border:1px solid transparent;border-radius:10px;min-height:44px;padding:10px 15px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}.button.primary{background:var(--green);color:white}.button.subtle{background:transparent;border-color:var(--line);color:var(--ink)}.button.warm{background:var(--orange);color:#2d3028}.button.full{width:100%;margin:6px 0}.button:hover:not(:disabled){filter:brightness(.96)}.page-heading{max-width:1440px;margin:auto;padding:36px 4.5% 30px;display:flex;justify-content:space-between;align-items:flex-end;gap:20px}.eyebrow{font-size:9px;letter-spacing:1.9px;font-weight:650;color:var(--muted);margin:0 0 7px}h1,h2,h3,p{overflow-wrap:anywhere}h1{font-size:32px;line-height:1.35;letter-spacing:.4px;margin:0 0 12px;font-weight:650}.intro{font-size:13px;color:var(--muted);margin:0}.phone-only{display:none}.local-badge{white-space:nowrap;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--green);margin-bottom:6px}.local-badge i{width:6px;height:6px;border-radius:50%;background:#7fa68b}.desk{display:grid;grid-template-columns:310px minmax(0,1fr);gap:22px;padding:0 4.5%;max-width:1440px;margin:0 auto;align-items:start}.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:0 5px 24px #344b3510}.library{min-height:600px;display:flex;flex-direction:column}.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:23px 24px 17px}.section-heading h2{font-size:17px;font-weight:650;line-height:1.5;margin:0}.section-heading h2>span{font-size:10px;color:var(--muted);font-weight:500;vertical-align:middle;margin-left:5px;border:1px solid var(--line);border-radius:20px;padding:2px 7px}.icon-button{width:40px;height:40px;border:1px solid var(--line);border-radius:11px;background:transparent;font-size:22px;display:grid;place-items:center;flex-shrink:0}.searchbox{display:flex;gap:9px;align-items:center;margin:0 20px 16px;background:#f1f2ec;border:1px solid transparent;border-radius:9px;padding:0 12px;min-height:43px;color:var(--muted)}.searchbox input{min-width:0;width:100%;border:0;background:transparent;outline:none;font-size:12px;padding:10px 0;color:var(--ink)}.searchbox:focus-within{border-color:var(--green)}.searchbox>span{font-size:24px;line-height:1}.import-tile{margin:0 20px 24px;padding:36px 12px;border:1px dashed #cfd7ca;border-radius:13px;background:#f8f9f3;display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;color:var(--green)}.import-mark{width:45px;height:45px;border:1px solid #dae1d4;border-radius:50%;display:grid;place-items:center;font-size:25px;font-weight:300}.import-tile strong{font-size:12px}.import-tile>span:last-child{font-size:10px;font-weight:400;max-width:180px;line-height:1.8;color:var(--muted)}.library-footer{margin-top:auto;padding:24px 24px;display:flex;gap:10px;color:var(--muted);border-top:1px solid var(--line);font-size:10px;line-height:1.8}.library-footer p{margin:0}.library-footer>span{font-size:20px;color:var(--green)}.media-list{padding:0 10px 10px;max-height:520px;overflow:auto}.media-card{display:flex;gap:11px;width:100%;padding:12px;border:1px solid transparent;border-radius:11px;text-align:left;background:transparent;align-items:center;margin-bottom:5px}.media-card.selected{background:var(--green-pale);border-color:#d8e2d6}.media-card:hover{background:#eff1e9}.media-swatch{width:42px;height:53px;flex-shrink:0;background:#dce8de;border-radius:7px;display:grid;place-items:center;color:var(--green);font-size:19px}.media-card:nth-child(3n+2) .media-swatch{background:#eee2ce;color:#7c5939}.media-card:nth-child(3n) .media-swatch{background:#dde5e9;color:#415b68}.media-info{min-width:0}.media-info strong{font-size:12px;font-weight:650;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:205px}.media-info small{font-size:10px;color:var(--muted);display:block;margin-top:4px}.media-card .arrow{margin-left:auto;font-size:18px;color:var(--green)}.workspace{display:grid;gap:22px;min-width:0}.player-heading h2{max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.player-heading #selected-meta{font-size:10px;color:var(--muted);margin:4px 0 0}.video-stage{background:#192a2b;min-height:260px;aspect-ratio:16/9;display:grid;place-items:center;position:relative;overflow:hidden}.video-stage::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 0 100%,#3b5d4a88,transparent 70%);pointer-events:none}.video-stage video{width:100%;height:100%;position:absolute;inset:0;object-fit:contain;background:#101919}.video-stage video:not([hidden])+div{display:none}#player-placeholder{text-align:center;color:#ecede3;padding:24px;position:relative}#player-placeholder h3{font-size:19px;letter-spacing:.6px;font-weight:550;margin:15px 0 8px}#player-placeholder p{font-size:11px;color:#b9c6bd;margin:0 0 20px}.frame-symbol{width:62px;height:52px;border:1px solid #849a8b;border-radius:9px;margin:auto;display:grid;place-items:center;position:relative}.frame-symbol::before,.frame-symbol::after{content:"";position:absolute;width:10px;height:7px;border-color:#d3dfd3}.frame-symbol::before{left:-5px;top:-5px;border-top:2px solid;border-left:2px solid}.frame-symbol::after{right:-5px;bottom:-5px;border-bottom:2px solid;border-right:2px solid}.frame-symbol>span{font-size:24px;color:var(--orange)}.player-controls{display:flex;align-items:center;gap:9px;padding:13px 22px}.small-button{border:1px solid var(--line);border-radius:8px;background:transparent;min-height:38px;min-width:40px;padding:7px 12px;font-size:11px;font-weight:600}.speed-label{margin-left:auto;color:var(--muted);font-size:10px;display:flex;align-items:center;gap:8px}select{border:1px solid var(--line);border-radius:7px;background:var(--panel);color:var(--ink);min-height:38px;padding:6px 8px}.speed-label select{font-size:11px}.loop-controls{border-top:1px solid var(--line);padding:12px 22px;display:flex;gap:9px;align-items:center;font-size:10px;flex-wrap:wrap}.loop-controls>span:first-child{font-weight:600;margin-right:2px}.loop-controls button{background:#f1f2ed;border:0;border-radius:6px;min-height:34px;padding:6px 10px;font-size:10px}.loop-controls .muted{margin-left:auto;font-size:9px}.note-panel{min-height:210px}.note-panel .section-heading{border-bottom:1px solid var(--line)}.note-panel .section-heading .button{font-size:11px;min-height:39px;padding:8px 13px}.empty-state{text-align:center;padding:33px 20px;color:var(--muted);font-size:11px}.empty-state .empty-mark{display:block;font-size:25px;color:#9cae9d;margin-bottom:8px}.empty-state p{margin:4px auto;max-width:300px}.note-form{padding:20px 24px;border-bottom:1px solid var(--line);background:#f9faf4}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}label{display:block;font-size:11px;font-weight:550}input:not([type=file]),textarea{color:var(--ink)}label>input,label>select{display:block;width:100%;margin-top:6px}input:not([type=file]):not([type=search]),textarea{border:1px solid #dce0d6;border-radius:8px;background:var(--panel);padding:11px 12px;min-width:0;font-size:14px}textarea{resize:vertical;min-height:100px;line-height:1.7}.note-form textarea,.note-form>input{width:100%;margin-top:12px}.form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:12px}.form-actions .button{font-size:12px}.note-row{display:flex;gap:14px;padding:19px 24px;border-bottom:1px solid var(--line)}.note-row:last-child{border-bottom:none}.time-button{align-self:flex-start;background:var(--green-pale);border:0;color:var(--green);font-size:11px;border-radius:7px;font-weight:650;min-height:36px;padding:8px 10px;white-space:nowrap}.note-body{flex:1;min-width:0}.note-body p{font-size:12px;white-space:pre-wrap;margin:7px 0;line-height:1.8}.note-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center}.tag{font-size:9px;color:#66766b;background:#eff2e9;border-radius:4px;padding:2px 6px}.category-tag{font-size:9px;color:#a57036;background:#f7eede;border-radius:4px;padding:2px 6px}.note-source{font-size:10px;color:var(--muted);display:block;margin-bottom:5px}.note-row .delete-note{border:0;background:transparent;color:var(--muted);min-width:35px;min-height:35px;align-self:flex-start;font-size:18px}.all-notes{display:none;min-height:430px;grid-column:1/-1}.all-notes>.searchbox{max-width:570px}.page-footer{max-width:1440px;margin:28px auto 0;padding:0 4.5% 28px;display:flex;justify-content:space-between;color:#8a918a;font-size:9px;letter-spacing:.8px;align-items:center;gap:12px}.text-button{border:0;background:transparent;color:var(--green);font-size:11px;text-decoration:underline;text-underline-offset:4px;min-height:35px}.mobile-nav{display:none}.inline-message{padding:14px 22px;background:#fcf2df;font-size:11px;color:#795b2a;display:flex;justify-content:space-between;align-items:center;gap:12px}.inline-message[role=alert]{display:block;background:#fbe9e1;color:#8f4b37}dialog{border:1px solid var(--line);border-radius:23px;background:var(--panel);color:var(--ink);padding:30px;width:min(460px,calc(100% - 28px));max-height:88dvh;overflow:auto;box-shadow:0 20px 100px #19362a30}dialog::backdrop{background:#13242177;backdrop-filter:blur(4px)}dialog h2{font-size:23px;font-weight:650;margin:6px 0 10px}dialog form>label{margin:16px 0}dialog .close-button{position:absolute;right:16px;top:13px;border:0;background:transparent;color:var(--muted);width:35px;height:35px;font-size:24px}.dialog-description{font-size:12px;color:var(--muted);margin:0 0 23px}.divider{text-align:center;font-size:10px;color:var(--muted);margin:20px 0;display:flex;align-items:center;gap:12px}.divider::before,.divider::after{content:"";height:1px;background:var(--line);flex:1}.fineprint{font-size:10px;line-height:1.8;color:var(--muted)}.error-text{font-size:12px;color:#a24d36}.notice{font-size:11px;line-height:1.9;padding:15px;background:#f2f2e9;border-radius:10px;margin-top:20px;color:#697365}.data-action{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:18px 0}.data-action strong{font-size:13px;display:flex;justify-content:space-between;gap:12px}.data-action small{font-size:10px;color:var(--muted);display:block;margin-top:6px}.help-list{padding-left:21px;font-size:12px}.help-list li{padding-left:8px;margin:20px 0}.help-list p{font-size:11px;color:var(--muted)}.toast{position:fixed;z-index:1000;bottom:26px;left:50%;transform:translateX(-50%);background:#253f36;color:#fffef5;border:1px solid #ffffff22;border-radius:12px;padding:13px 16px;box-shadow:0 6px 35px #11231c30;max-width:min(600px,calc(100% - 24px));width:max-content;display:flex;gap:12px;align-items:center;font-size:12px}.toast button{background:transparent;border:0;color:#f5c78f;white-space:nowrap;min-height:30px}.toast #toast-close{color:#c2cec4;font-size:19px}.sr-only{position:absolute;clip:rect(0,0,0,0);width:1px;height:1px;overflow:hidden;white-space:nowrap}body[data-view=notes] .library,body[data-view=notes] .workspace{display:none}body[data-view=notes] .all-notes{display:block}body[data-view=notes] .page-heading{padding-bottom:25px}
+@media(min-width:761px){body[data-view=library] .library{display:flex}body[data-view=library] .workspace{display:grid}}
+@media(max-width:1000px) and (min-width:761px){.desk{grid-template-columns:260px minmax(0,1fr);gap:16px;padding:0 3%}.topbar,.page-heading{padding-left:3%;padding-right:3%}.media-info strong{max-width:150px}.video-stage{min-height:240px}.local-badge{display:none}.section-heading{padding:20px 18px 15px}.loop-controls .muted{display:none}}
+@media(max-width:760px){body{padding-bottom:calc(82px + env(safe-area-inset-bottom))}.topbar{padding:calc(17px + env(safe-area-inset-top)) 20px 16px}.brand{font-size:21px;gap:10px}.brand-icon{width:38px;line-height:38px;font-size:23px}.brand small{font-size:8px}.topbar .button{font-size:10px;padding:9px 11px;min-height:38px}.page-heading{padding:25px 22px 24px;display:block}.page-heading .eyebrow{font-size:8px;letter-spacing:1.4px}h1{font-size:27px;line-height:1.48;margin-bottom:9px}.intro{font-size:11px;line-height:1.9;max-width:310px}.phone-only{display:block}.local-badge{font-size:9px;margin-top:13px}.desk{display:block;padding:0 14px}.library{display:none;min-height:410px}.workspace{gap:16px}.section-heading{padding:20px 18px 15px}.player-heading{padding:19px 18px 17px}.player-heading h2{font-size:16px}.player-heading #selected-meta{font-size:10px}.video-stage{min-height:220px;aspect-ratio:16/10}#player-placeholder h3{font-size:17px}#player-placeholder p{font-size:10px;max-width:240px;margin:0 auto 17px}.frame-symbol{width:50px;height:43px}.player-controls{padding:13px 14px;gap:7px}.small-button{padding:7px 9px;min-height:38px;font-size:10px}.speed-label{gap:5px;font-size:9px}.speed-label select{font-size:11px;padding:6px}.loop-controls{padding:11px 16px;gap:7px;font-size:9px}.loop-controls button{font-size:9px;min-height:34px}.loop-controls .muted{display:none}.note-panel{min-height:215px}.note-panel .section-heading h2{font-size:16px}.note-panel .section-heading .button{padding:8px 11px;font-size:10px}.note-form{padding:18px}.note-row{padding:18px 17px;gap:10px}.note-body p{font-size:12px}.note-tags{gap:4px}.time-button{font-size:10px;padding:7px 8px}.page-footer{padding:0 22px 10px;margin-top:24px;flex-wrap:wrap;font-size:8px}.page-footer>span:nth-child(2){display:none}.page-footer .text-button{font-size:10px}.mobile-nav{display:flex;position:fixed;z-index:50;bottom:0;left:0;right:0;border-top:1px solid #e2e5dc;background:#fffefaee;backdrop-filter:blur(16px);padding:7px 10px calc(7px + env(safe-area-inset-bottom))}.mobile-nav button{border:0;background:transparent;color:#858e84;flex:1;min-height:48px;font-size:10px;display:flex;align-items:center;justify-content:center;gap:2px;flex-direction:column}.mobile-nav button>span{font-size:20px;line-height:1.2}.mobile-nav button[aria-current=page]{color:var(--green);font-weight:700}.toast{bottom:calc(81px + env(safe-area-inset-bottom));font-size:11px}.media-list{max-height:none}.media-info strong{max-width:245px}.import-tile{padding:30px 15px}.import-tile.compact{padding:20px 15px}.import-tile.compact .import-mark{display:none}.all-notes{min-height:350px}body[data-view=workspace] .library{display:none}body[data-view=library] .workspace{display:none}body[data-view=library] .library{display:flex}body[data-view=notes] .all-notes{display:block}body:not([data-view=workspace]) .page-heading h1{font-size:24px}body:not([data-view=workspace]) .phone-only{display:none}dialog{padding:27px 23px;border-radius:20px}input:not([type=file]):not([type=search]),textarea,select{font-size:16px}.searchbox input{font-size:16px}.searchbox{min-height:45px}.video-stage:has(video:not([hidden])){background:#000}.inline-message{font-size:11px;padding:12px 16px}}
+@media(prefers-reduced-motion:no-preference){.button,.media-card,.small-button{transition:background .18s,filter .18s}.note-row{animation:appear .2s ease-out}@keyframes appear{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:translateY(0)}}}
+.speed-label{white-space:nowrap}
+</style>
+</head>
+<body data-view="workspace">
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="映記首頁"><span class="brand-icon" aria-hidden="true">▣</span><span>映記 <small>FRAME NOTES</small></span></a>
+    <button class="button subtle" id="backup-button"><span aria-hidden="true">↗</span> 備份與匯出</button>
+  </header>
+  <div class="page-heading"><div><p class="eyebrow">YOUR PERSONAL RESEARCH DESK</p><h1>把值得留意的，<br class="phone-only">留在時間裡。</h1><p class="intro">匯入影片，記下觀察。每個時間點，都能成為下一個發現。</p></div><span class="local-badge"><i></i> 資料保存在此裝置</span></div>
+  <main class="desk">
+    <aside class="library panel" aria-labelledby="library-heading">
+      <div class="section-heading"><div><p class="eyebrow">01 / COLLECTION</p><h2 id="library-heading">研究素材 <span id="media-count">0</span></h2></div><button class="icon-button" id="add-button" aria-label="新增研究素材">＋</button></div>
+      <label class="searchbox"><span aria-hidden="true">⌕</span><input id="media-search" type="search" placeholder="搜尋素材名稱" aria-label="搜尋素材名稱"></label>
+      <div id="media-list" class="media-list"></div>
+      <button class="import-tile" id="import-tile"><span class="import-mark" aria-hidden="true">＋</span><strong>加入第一份研究素材</strong><span>從手機選擇影片，或使用影片直連網址</span></button>
+      <div class="library-footer"><span aria-hidden="true">◌</span><p>影片與筆記不會上傳至我們的伺服器。請定期匯出備份，避免瀏覽器清除資料。</p></div>
+    </aside>
+    <section class="workspace" aria-label="播放與記錄">
+      <section class="player-panel panel">
+        <div class="section-heading player-heading"><div class="grow"><p class="eyebrow">02 / OBSERVE</p><h2 id="selected-title">準備開始觀察</h2><p id="selected-meta">選擇一份素材，建立你的研究紀錄</p></div><button class="icon-button hidden" id="rename-button" aria-label="重新命名素材">✎</button></div>
+        <div class="video-stage" id="video-stage"><video id="video" controls playsinline webkit-playsinline preload="metadata" hidden></video><div id="player-placeholder"><div class="frame-symbol" aria-hidden="true"><span>▷</span></div><h3>從一段影片開始</h3><p>選取素材後，即可播放、調速與標記時間點。</p><button class="button warm" id="placeholder-import">匯入影片 <span aria-hidden="true">↗</span></button></div></div>
+        <div id="video-error" class="inline-message hidden" role="alert"></div>
+        <div id="relink-box" class="inline-message hidden"><span>這份備份不含影片，請重新選取原始檔案。</span><button class="text-button" id="relink-button">連結影片</button></div>
+        <div class="player-controls"><button id="play-toggle" class="small-button" disabled aria-label="播放影片">▷ 播放</button><button id="back-ten" class="small-button" disabled aria-label="倒退十秒">↶ 10s</button><button id="forward-ten" class="small-button" disabled aria-label="快進十秒">10s ↷</button><label class="speed-label">速度 <select id="playback-speed" aria-label="播放速度" disabled><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label><button id="fullscreen-button" class="small-button" disabled aria-label="全螢幕播放">⛶</button></div>
+        <div class="loop-controls"><span>片段重看</span><button id="set-a" disabled>設定 A</button><button id="set-b" disabled>設定 B</button><button id="clear-loop" class="hidden">清除</button><span id="loop-label" class="muted">在兩個時間點間循環播放</span></div>
+      </section>
+      <section class="note-panel panel" aria-labelledby="note-heading">
+        <div class="section-heading"><div><p class="eyebrow">03 / ANNOTATE</p><h2 id="note-heading">觀察筆記 <span id="selected-note-count">0</span></h2></div><button class="button primary" id="capture-button" disabled>＋ 記下此刻</button></div>
+        <form id="note-form" class="note-form hidden"><div class="form-grid"><label>時間點<input id="note-time" inputmode="decimal" value="00:00" required autocomplete="off"></label><label>分類<select id="note-category"><option>觀察</option><option>重點</option><option>待驗證</option><option>引用</option></select></label></div><label class="sr-only" for="note-text">研究筆記內容</label><textarea id="note-text" rows="3" maxlength="10000" required placeholder="記下這個時間點的觀察、問題或想法…"></textarea><label class="sr-only" for="note-tags">標籤，以逗號分隔</label><input id="note-tags" maxlength="500" placeholder="標籤，以逗號分隔，例如：人物、場景"><div class="form-actions"><button type="button" class="button subtle" id="cancel-note">取消</button><button type="submit" class="button primary" id="save-note">儲存筆記</button></div></form>
+        <div id="selected-notes"></div>
+      </section>
+    </section>
+    <section class="all-notes panel" aria-labelledby="all-notes-heading"><div class="section-heading"><div><p class="eyebrow">RESEARCH INDEX</p><h2 id="all-notes-heading">所有研究筆記 <span id="all-note-count">0</span></h2></div><button class="button subtle" id="csv-button">匯出 CSV</button></div><label class="searchbox"><span aria-hidden="true">⌕</span><input type="search" id="note-search" aria-label="搜尋筆記、標籤或素材" placeholder="搜尋筆記、標籤或素材名稱"></label><div id="all-notes-list"></div></section>
+  </main>
+  <footer class="page-footer"><span>映記 / FRAME NOTES</span><span>留意細節，慢慢發現。</span><button class="text-button" id="help-button">手機使用說明</button></footer>
+  <nav class="mobile-nav" aria-label="主要導覽"><button data-view-button="workspace" aria-current="page"><span aria-hidden="true">▷</span>播放器</button><button data-view-button="library"><span aria-hidden="true">▤</span>素材庫</button><button data-view-button="notes"><span aria-hidden="true">✎</span>所有筆記</button></nav>
+  <input type="file" id="video-input" accept="video/*,.mp4,.m4v,.mov,.webm" multiple hidden>
+  <input type="file" id="relink-input" accept="video/*,.mp4,.m4v,.mov,.webm" hidden>
+  <input type="file" id="backup-input" accept="application/json,.json" hidden>
+  <dialog id="add-dialog"><form method="dialog"><button class="close-button" aria-label="關閉">×</button></form><p class="eyebrow">BUILD YOUR COLLECTION</p><h2>加入研究素材</h2><p class="dialog-description">使用你自己持有或獲得授權的影片。</p><button id="choose-files" class="button primary full">從手機選擇影片</button><div class="divider">或加入影片網址</div><form id="url-form"><label>素材名稱<input id="url-title" maxlength="240" placeholder="例如：訪談紀錄 01" required></label><label>HTTPS 影片直連網址<input id="video-url" type="url" placeholder="https://…/video.mp4" required maxlength="8192"></label><p class="fineprint">需為瀏覽器可播放的影片直連，網頁網址不適用。網址影片會直接連線至該網站。</p><button class="button subtle full" type="submit">加入網址素材</button><p id="url-error" class="error-text" role="alert"></p></form></dialog>
+  <dialog id="data-dialog"><form method="dialog"><button class="close-button" aria-label="關閉">×</button></form><p class="eyebrow">YOUR DATA, IN YOUR HANDS</p><h2>備份與匯出</h2><p class="dialog-description">保留你的研究成果，也能轉移到其他裝置。</p><button class="data-action" id="export-json"><strong>下載完整筆記備份 <span>↗</span></strong><small>JSON · 素材資料、時間點與所有筆記；不含影片檔案</small></button><button class="data-action" id="export-csv"><strong>匯出研究筆記表格 <span>↗</span></strong><small>CSV · 可用 Excel 或試算表開啟</small></button><button class="data-action" id="import-json"><strong>匯入先前備份 <span>＋</span></strong><small>合併 JSON 備份；本機影片需重新連結</small></button><div class="notice">資料僅存於目前瀏覽器，不會跨裝置自動同步。清除網站資料或使用私密瀏覽可能導致資料遺失。請另行保存原始影片。</div></dialog>
+  <dialog id="help-dialog"><form method="dialog"><button class="close-button" aria-label="關閉">×</button></form><p class="eyebrow">A SMALL FIELD GUIDE</p><h2>在手機開始研究</h2><ol class="help-list"><li><strong>加入素材</strong><p>按「＋」從「檔案」選擇影片。MP4（H.264 / AAC）通常有較佳相容性。</p></li><li><strong>記下此刻</strong><p>播放時按「記下此刻」，填寫筆記與標籤。點筆記上的時間即可跳回對應片段。</p></li><li><strong>帶走研究成果</strong><p>從「備份與匯出」下載 JSON 備份或 CSV 表格。JSON 備份不包含原始影片。</p></li></ol><div class="notice">網頁上線後，可在 iPhone Safari 按「分享 → 加入主畫面」。首次開啟需要網路；下載的單一 HTML 檔需以可執行網頁的瀏覽器開啟。</div></dialog>
+  <dialog id="rename-dialog"><form id="rename-form"><button type="button" class="close-button" id="cancel-rename" aria-label="關閉">×</button><h2>重新命名素材</h2><label>素材名稱<input id="rename-title" maxlength="240" required></label><button type="submit" class="button primary full">儲存名稱</button></form></dialog>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"><span id="toast-text"></span><button id="toast-action" class="hidden"></button><button id="toast-close" aria-label="關閉通知">×</button></div>
+  <script type="module">function formatTime(value) {
+  const seconds = Math.floor(Math.max(0, Number(value) || 0));
+  const hours = Math.floor(seconds / 3600);
+  return `${hours ? `${hours}:` : ''}${String(Math.floor(seconds / 60) % 60).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
+}
+
+function parseTime(value) {
+  const text = String(value).trim();
+  if (!/^\d+(?::[0-5]?\d){0,2}(?:\.\d{1,3})?$/.test(text)) throw new Error('請輸入時間，例如 01:25 或 1:02:30。');
+  const number = text.split(':').reduce((total, part) => total * 60 + Number(part), 0);
+  if (!Number.isFinite(number) || number > 604800) throw new Error('時間超出可用範圍。');
+  return number;
+}
+
+function validateVideoUrl(raw) {
+  let url;
+  try { url = new URL(String(raw).trim()); } catch { throw new Error('請輸入完整的 HTTPS 影片網址。'); }
+  if (url.protocol !== 'https:' || url.username || url.password || url.href.length > 8192) throw new Error('只接受不含帳密的 HTTPS 影片網址。');
+  const host = url.hostname.toLowerCase();
+  if (!host.includes('.') || host.endsWith('.localhost') || host.endsWith('.local') || host.includes(':') || /^\d+\.\d+\.\d+\.\d+$/.test(host)) throw new Error('請使用公開網站的影片網址。');
+  return url.href;
+}
+
+function csvCell(value) {
+  let text = String(value ?? '');
+  if (/^[\s]*[=+@-]/.test(text) || /^[\t\r]/.test(text)) text = `'${text}`;
+  return `"${text.replaceAll('"', '""')}"`;
+}
+
+function notesCsv(media, notes) {
+  const titles = new Map(media.map(item => [item.id, item.title]));
+  return '\ufeff' + [
+    ['素材名稱', '時間點', '秒數', '分類', '標籤', '筆記', '建立時間'],
+    ...[...notes].sort((a, b) => a.mediaId.localeCompare(b.mediaId) || a.time - b.time).map(note => [titles.get(note.mediaId) || '未連結素材', formatTime(note.time), note.time, note.category, note.tags.join('、'), note.text, note.createdAt]),
+  ].map(row => row.map(csvCell).join(',')).join('\r\n');
+}
+
+const shortText = (value, max) => typeof value === 'string' && value.length <= max;
+function validateBackup(raw) {
+  if (!raw || raw.format !== 'frame-notes' || raw.version !== 1 || !Array.isArray(raw.media) || !Array.isArray(raw.notes) || raw.media.length > 1000 || raw.notes.length > 10000) throw new Error('備份格式不正確，請選擇映記匯出的 JSON。');
+  const ids = new Set();
+  const noteIds = new Set();
+  const media = raw.media.map(item => {
+    if (!item || !shortText(item.id, 100) || !item.id || ids.has(item.id) || !shortText(item.title, 240) || !['file', 'url'].includes(item.kind)) throw new Error('備份中的素材資料不正確。');
+    ids.add(item.id);
+    const url = item.kind === 'url' ? validateVideoUrl(item.url) : undefined;
+    return {id: item.id, title: item.title, kind: item.kind, url, fileName: shortText(item.fileName, 500) ? item.fileName : '', size: Number.isSafeInteger(item.size) && item.size >= 0 ? item.size : 0, duration: Number.isFinite(item.duration) && item.duration >= 0 ? item.duration : 0, progress: Number.isFinite(item.progress) && item.progress >= 0 ? item.progress : 0, createdAt: shortText(item.createdAt, 60) ? item.createdAt : new Date().toISOString()};
+  });
+  const notes = raw.notes.map(item => {
+    if (!item || !shortText(item.id, 100) || !item.id || noteIds.has(item.id) || !ids.has(item.mediaId) || !Number.isFinite(item.time) || item.time < 0 || item.time > 604800 || !shortText(item.text, 10000) || !item.text.trim() || !shortText(item.category, 40) || !Array.isArray(item.tags) || item.tags.length > 20 || !item.tags.every(tag => shortText(tag, 60))) throw new Error('備份中的筆記資料不正確。');
+    noteIds.add(item.id);
+    return {id: item.id, mediaId: item.mediaId, time: item.time, text: item.text, category: item.category, tags: item.tags, createdAt: shortText(item.createdAt, 60) ? item.createdAt : new Date().toISOString()};
+  });
+  return {media, notes};
+}
+
+
+const $ = id => document.getElementById(id);
+const video = $('video');
+const data = {media: [], notes: [], selected: null, view: 'workspace', a: null, b: null, editing: null};
+let database;
+let objectUrl;
+let selectionGeneration = 0;
+let toastTimer;
+let lastProgressSave = 0;
+let savingNote = false;
+const id = () => globalThis.crypto?.randomUUID?.() || `id-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const current = () => data.media.find(item => item.id === data.selected);
+const date = () => new Date().toISOString();
+
+function toast(message, action, callback) {
+  clearTimeout(toastTimer);
+  $('toast-text').textContent = message;
+  $('toast-action').textContent = action || '';
+  $('toast-action').classList.toggle('hidden', !action);
+  $('toast-action').onclick = callback ? async () => { $('toast').classList.add('hidden'); try { await callback(); } catch { toast('操作未能保存，請先匯出備份。'); } } : null;
+  $('toast').classList.remove('hidden');
+  toastTimer = setTimeout(() => $('toast').classList.add('hidden'), action ? 15000 : 6500);
+}
+$('toast-close').onclick = () => $('toast').classList.add('hidden');
+
+function openDatabase() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open('frame-notes-v1', 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore('media', {keyPath: 'id'});
+      request.result.createObjectStore('notes', {keyPath: 'id'});
+      request.result.createObjectStore('files', {keyPath: 'id'});
+    };
+    request.onsuccess = () => { request.result.onversionchange = () => request.result.close(); resolve(request.result); };
+    request.onerror = () => reject(request.error);
+    request.onblocked = () => reject(new Error('請先關閉其他開啟中的映記分頁。'));
+  });
+}
+function all(store) {
+  return new Promise((resolve, reject) => {
+    const request = database.transaction(store).objectStore(store).getAll();
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+}
+function transact(store, type, value) {
+  if (!database) return Promise.reject(new Error('此瀏覽器無法保存資料。'));
+  return new Promise((resolve, reject) => {
+    const tx = database.transaction(store, 'readwrite');
+    tx.objectStore(store)[type](value);
+    tx.oncomplete = resolve;
+    tx.onabort = () => reject(tx.error || new Error('資料保存失敗。'));
+    tx.onerror = () => {};
+  });
+}
+async function persistMedia(item, showError = true) {
+  try { const {blob,notSaved,fileNotSaved,...record} = item; await transact('media', 'put', record); delete item.notSaved; return true; }
+  catch { item.notSaved = true; if (showError) toast('裝置儲存空間不足或無法保存；本次可繼續使用，離開前請匯出筆記。'); return false; }
+}
+async function persistFile(item) {
+  try { await transact('files','put',{id:item.id,blob:item.blob}); delete item.fileNotSaved; }
+  catch { item.fileNotSaved = true; toast('影片檔案無法保存，只能在本次使用；筆記可正常保存，之後請重新連結原始影片。'); }
+}
+function readFile(mediaId) {
+  if (!database) return Promise.resolve(null);
+  return new Promise(resolve => {
+    const request=database.transaction('files').objectStore('files').get(mediaId);
+    request.onsuccess=()=>resolve(request.result?.blob || null);
+    request.onerror=()=>resolve(null);
+  });
+}
+function showView(view) {
+  data.view = view;
+  document.body.dataset.view = view;
+  document.querySelectorAll('[data-view-button]').forEach(button => { if (button.dataset.viewButton === view) button.setAttribute('aria-current', 'page'); else button.removeAttribute('aria-current'); });
+}
+function renderLibrary() {
+  $('media-count').textContent = data.media.length;
+  const query = $('media-search').value.trim().toLocaleLowerCase();
+  const items = data.media.filter(item => item.title.toLocaleLowerCase().includes(query));
+  $('media-list').innerHTML = items.map((item, i) => `<button class="media-card ${item.id === data.selected ? 'selected' : ''}" data-media-id="${esc(item.id)}" ${item.id === data.selected ? 'aria-current="true"' : ''}><span class="media-swatch" aria-hidden="true">${String(i + 1).padStart(2,'0')}</span><span class="media-info"><strong>${esc(item.title)}</strong><small>${item.duration ? formatTime(item.duration) : item.kind === 'url' ? '網址素材' : '本機影片'} · ${data.notes.filter(note => note.mediaId === item.id).length} 則筆記${item.notSaved ? ' · 未保存' : item.fileNotSaved ? ' · 影片未保存' : item.needsRelink ? ' · 待連結' : ''}</small></span><span class="arrow" aria-hidden="true">›</span></button>`).join('') || (query ? '<div class="empty-state">找不到符合的素材名稱</div>' : '');
+  $('import-tile').classList.toggle('compact', data.media.length > 0);
+  $('import-tile').querySelector('strong').textContent = data.media.length ? '繼續加入研究素材' : '加入第一份研究素材';
+  $('media-list').querySelectorAll('[data-media-id]').forEach(button => button.onclick = () => selectMedia(button.dataset.mediaId));
+}
+function noteMarkup(note, global) {
+  const item = data.media.find(media => media.id === note.mediaId);
+  return `<article class="note-row"><button class="time-button" data-note-jump="${esc(note.id)}" aria-label="播放 ${esc(item?.title || '素材')} 的 ${formatTime(note.time)}">${formatTime(note.time)}</button><div class="note-body">${global ? `<span class="note-source">${esc(item?.title || '未連結素材')}</span>` : ''}<div class="note-tags"><span class="category-tag">${esc(note.category)}</span>${note.tags.map(tag => `<span class="tag">${esc(tag)}</span>`).join('')}</div><p>${esc(note.text)}</p><button class="text-button" data-note-edit="${esc(note.id)}">編輯筆記</button></div><button class="delete-note" data-note-delete="${esc(note.id)}" aria-label="移除筆記，可復原">×</button></article>`;
+}
+function bindNotes(container) {
+  container.querySelectorAll('[data-note-jump]').forEach(button => button.onclick = async () => {
+    const note = data.notes.find(item => item.id === button.dataset.noteJump);
+    if (!note) return;
+    await selectMedia(note.mediaId, note.time);
+    showView('workspace');
+    if (window.innerWidth <= 760) $('video-stage').scrollIntoView({block:'start'});
+  });
+  container.querySelectorAll('[data-note-edit]').forEach(button => button.onclick = async () => {
+    const note = data.notes.find(item => item.id === button.dataset.noteEdit);
+    if (!note) return;
+    await selectMedia(note.mediaId);
+    showView('workspace');
+    openNote(note);
+  });
+  container.querySelectorAll('[data-note-delete]').forEach(button => button.onclick = async () => {
+    const note = data.notes.find(item => item.id === button.dataset.noteDelete);
+    if (!note) return;
+    try { await transact('notes', 'delete', note.id); } catch { if (!note.notSaved) { toast('無法移除筆記，已保留原資料。'); return; } }
+    data.notes = data.notes.filter(item => item.id !== note.id);
+    renderNotes(); renderLibrary();
+    toast('筆記已移除。', '復原', async () => { await transact('notes','put',note); data.notes.push(note); renderNotes(); renderLibrary(); });
+  });
+}
+function renderNotes() {
+  const selectedNotes = data.notes.filter(note => note.mediaId === data.selected).sort((a,b) => a.time - b.time);
+  $('selected-note-count').textContent = selectedNotes.length;
+  $('all-note-count').textContent = data.notes.length;
+  $('selected-notes').innerHTML = selectedNotes.map(note => noteMarkup(note, false)).join('') || '<div class="empty-state"><span class="empty-mark" aria-hidden="true">✎</span><p>讓每個觀察，都有跡可循。</p><p>播放影片時，按「記下此刻」新增時間點筆記。</p></div>';
+  const query = $('note-search').value.trim().toLocaleLowerCase();
+  const filtered = data.notes.filter(note => [note.text, note.category, ...note.tags, data.media.find(item => item.id === note.mediaId)?.title || ''].join(' ').toLocaleLowerCase().includes(query)).sort((a,b) => a.mediaId.localeCompare(b.mediaId) || a.time - b.time);
+  $('all-notes-list').innerHTML = filtered.map(note => noteMarkup(note, true)).join('') || `<div class="empty-state"><span class="empty-mark" aria-hidden="true">✎</span><p>${query ? '找不到符合的筆記。' : '你的研究筆記會整理在這裡。'}</p></div>`;
+  bindNotes($('selected-notes')); bindNotes($('all-notes-list'));
+}
+function resetLoop() { data.a = data.b = null; renderLoop(); }
+function renderLoop() {
+  $('set-a').textContent = data.a === null ? '設定 A' : `A ${formatTime(data.a)}`;
+  $('set-b').textContent = data.b === null ? '設定 B' : `B ${formatTime(data.b)}`;
+  $('clear-loop').classList.toggle('hidden', data.a === null && data.b === null);
+  $('loop-label').textContent = data.b === null ? '在兩個時間點間循環播放' : '片段循環中';
+}
+function setControls(enabled) {
+  ['play-toggle','back-ten','forward-ten','playback-speed','fullscreen-button','set-a','set-b'].forEach(name => $(name).disabled = !enabled);
+  $('capture-button').disabled = !current();
+}
+async function selectMedia(mediaId, seekTo) {
+  const item = data.media.find(row => row.id === mediaId);
+  if (!item) return;
+  if (data.selected === mediaId) {
+    if (Number.isFinite(seekTo)) { if (video.readyState >= 1) video.currentTime = Math.min(seekTo, Number.isFinite(video.duration) ? video.duration : seekTo); else pendingSeek = seekTo; }
+    showView('workspace');
+    return;
+  }
+  const old = current();
+  if (old && video.readyState >= 1) { old.progress = video.currentTime; void persistMedia(old, false); }
+  const generation = ++selectionGeneration;
+  video.pause(); video.removeAttribute('src'); video.load();
+  if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = undefined; }
+  data.selected = item.id;
+  if (item.kind === 'file' && !item.blob) item.blob = await readFile(item.id);
+  if (generation !== selectionGeneration) return;
+  resetLoop();
+  pendingSeek = Number.isFinite(seekTo) ? seekTo : item.progress || 0;
+  $('note-form').classList.add('hidden'); data.editing = null;
+  $('selected-title').textContent = item.title;
+  $('selected-meta').textContent = `${item.kind === 'url' ? '網址素材' : '本機影片'}${item.duration ? ` · ${formatTime(item.duration)}` : ''}${item.notSaved || item.fileNotSaved ? ' · 影片僅本次使用' : ''}`;
+  $('rename-button').classList.remove('hidden');
+  $('video-error').classList.add('hidden');
+  const playable = item.kind === 'url' || item.blob instanceof Blob;
+  $('relink-box').classList.toggle('hidden', playable);
+  $('player-placeholder').classList.toggle('hidden', playable);
+  video.hidden = !playable;
+  setControls(false);
+  if (playable) {
+    const source = item.kind === 'url' ? item.url : (objectUrl = URL.createObjectURL(item.blob));
+    video.src = source; video.load();
+  }
+  try { localStorage.setItem('frame-notes-selected', item.id); } catch {}
+  renderLibrary(); renderNotes(); showView('workspace');
+}
+let pendingSeek = 0;
+video.addEventListener('loadedmetadata', () => {
+  const item = current(); if (!item) return;
+  if (Number.isFinite(video.duration)) item.duration = video.duration;
+  if (pendingSeek && Number.isFinite(video.duration)) video.currentTime = Math.min(pendingSeek, Math.max(0, video.duration - .1));
+  pendingSeek = 0;
+  video.playbackRate = Number($('playback-speed').value);
+  setControls(true);
+  $('selected-meta').textContent = `${item.kind === 'url' ? '網址素材' : '本機影片'}${item.duration ? ` · ${formatTime(item.duration)}` : ''}${item.notSaved || item.fileNotSaved ? ' · 影片僅本次使用' : ''}`;
+  void persistMedia(item, false); renderLibrary();
+});
+video.addEventListener('error', () => {
+  if (!video.getAttribute('src')) return;
+  $('video-error').textContent = '這份素材無法播放。請確認格式受 iPhone 支援；網址需為有效的影片直連，且來源允許瀏覽器播放。可優先使用 MP4（H.264 / AAC）。';
+  $('video-error').classList.remove('hidden'); setControls(false);
+});
+video.addEventListener('timeupdate', () => {
+  if (data.a !== null && data.b !== null && video.currentTime >= data.b) video.currentTime = data.a;
+  const item = current();
+  if (item && Date.now() - lastProgressSave > 10000 && video.readyState >= 1) { item.progress = video.currentTime; lastProgressSave = Date.now(); void persistMedia(item, false); }
+});
+video.addEventListener('pause', () => { const item = current(); if (item && video.readyState >= 1) { item.progress = video.currentTime; void persistMedia(item, false); } });
+function renderPlay() { $('play-toggle').textContent = video.paused ? '▷ 播放' : 'Ⅱ 暫停'; $('play-toggle').setAttribute('aria-label', video.paused ? '播放影片' : '暫停影片'); }
+video.addEventListener('play',renderPlay); video.addEventListener('pause',renderPlay); video.addEventListener('ended',renderPlay);
+$('play-toggle').onclick = async () => { if (!video.paused) video.pause(); else { try { await video.play(); } catch { toast('無法開始播放，請檢查影片格式或使用影片原生控制列。'); } } };
+document.addEventListener('visibilitychange', () => { if (document.hidden) { video.pause(); } });
+$('back-ten').onclick = () => { video.currentTime = Math.max(0,video.currentTime-10); };
+$('forward-ten').onclick = () => { video.currentTime = Math.min(Number.isFinite(video.duration) ? video.duration : video.currentTime+10, video.currentTime+10); };
+$('playback-speed').onchange = () => { video.playbackRate = Number($('playback-speed').value); };
+$('set-a').onclick = () => { data.a = video.currentTime; data.b = null; renderLoop(); };
+$('set-b').onclick = () => { if (data.a === null) { toast('先在片段起點按「設定 A」。'); return; } if (video.currentTime <= data.a + .25) { toast('B 點必須晚於 A 點。'); return; } data.b = video.currentTime; video.currentTime = data.a; renderLoop(); };
+$('clear-loop').onclick = resetLoop;
+$('fullscreen-button').onclick = async () => { try { if (video.webkitEnterFullscreen) video.webkitEnterFullscreen(); else if (video.requestFullscreen) await video.requestFullscreen(); else toast('請使用影片控制列中的全螢幕按鈕。'); } catch { toast('請使用影片控制列中的全螢幕按鈕。'); } };
+
+function openNote(note) {
+  if (!current()) return;
+  data.editing = note?.id || null;
+  $('note-time').value = formatTime(note ? note.time : video.currentTime);
+  $('note-category').value = note?.category || '觀察';
+  $('note-text').value = note?.text || '';
+  $('note-tags').value = note?.tags.join('、') || '';
+  $('save-note').textContent = note ? '儲存修改' : '儲存筆記';
+  $('note-form').classList.remove('hidden');
+  $('note-text').focus({preventScroll:true});
+  $('note-form').scrollIntoView({block:'nearest'});
+}
+$('capture-button').onclick = () => openNote();
+$('cancel-note').onclick = () => { $('note-form').classList.add('hidden'); data.editing = null; };
+$('note-form').onsubmit = async event => {
+  event.preventDefault();
+  if (savingNote || !current()) return;
+  try {
+    const time = parseTime($('note-time').value);
+    const item = current();
+    if (item.duration && time > item.duration) throw new Error('筆記時間超出影片長度。');
+    const text = $('note-text').value.trim();
+    if (!text) throw new Error('請先填寫筆記內容。');
+    const previous = data.notes.find(note => note.id === data.editing);
+    const note = {id: previous?.id || id(), mediaId:item.id, time, text, category:$('note-category').value, tags:[...new Set($('note-tags').value.split(/[,，、]/).map(tag => tag.trim().slice(0,60)).filter(Boolean))].slice(0,20), createdAt:previous?.createdAt || date()};
+    savingNote = true; $('save-note').disabled = true;
+    try { await transact('notes','put',note); }
+    catch { note.notSaved = true; toast('筆記僅保留在本次使用中，請先匯出備份。'); }
+    data.notes = data.notes.filter(row => row.id !== note.id); data.notes.push(note);
+    renderNotes(); renderLibrary(); $('note-form').classList.add('hidden'); data.editing = null;
+    if (!note.notSaved) toast('已儲存時間點筆記。');
+  } catch (error) { toast(error.message); }
+  finally { savingNote = false; $('save-note').disabled = false; }
+};
+
+function showAdd() { $('url-error').textContent=''; $('add-dialog').showModal(); }
+['add-button','import-tile','placeholder-import'].forEach(name => $(name).onclick = showAdd);
+$('choose-files').onclick = () => { $('add-dialog').close(); $('video-input').click(); };
+async function importFiles(files) {
+  let first;
+  let count = 0;
+  for (const file of files) {
+    if (!file.type.startsWith('video/') && !/\.(mp4|m4v|mov|webm)$/i.test(file.name)) { toast(`略過不支援的檔案：${file.name}`); continue; }
+    const duplicate = data.media.find(item => item.kind==='file' && item.fileName===file.name && item.size===file.size && item.lastModified===file.lastModified);
+    if (duplicate) { first ||= duplicate.id; continue; }
+    const item = {id:id(), title:file.name.replace(/\.[^.]+$/,'').slice(0,240), fileName:file.name, size:file.size, lastModified:file.lastModified, kind:'file', blob:file, duration:0, progress:0, createdAt:date()};
+    await persistMedia(item); await persistFile(item); data.media.push(item); first ||= item.id; count++;
+  }
+  renderLibrary(); if (first) await selectMedia(first);
+  if (count && !data.media.some(item => item.notSaved || item.fileNotSaved)) toast(`已加入 ${count} 份素材，影片保存在此裝置。`);
+}
+$('video-input').onchange = async event => { const files=[...event.target.files]; event.target.value=''; await importFiles(files); };
+$('url-form').onsubmit = async event => {
+  event.preventDefault();
+  try {
+    const url = validateVideoUrl($('video-url').value);
+    const item = {id:id(),title:$('url-title').value.trim().slice(0,240),kind:'url',url,duration:0,progress:0,createdAt:date()};
+    if (!item.title) throw new Error('請輸入素材名稱。');
+    await persistMedia(item); data.media.push(item); $('url-form').reset(); $('add-dialog').close(); await selectMedia(item.id);
+  } catch(error) { $('url-error').textContent = error.message; }
+};
+$('relink-button').onclick = () => $('relink-input').click();
+$('relink-input').onchange = async event => {
+  const file = event.target.files[0]; event.target.value=''; const item=current();
+  if (!file || !item) return;
+  if (item.fileName && file.name!==item.fileName) { toast(`請選取原始影片「${item.fileName}」，以免時間點對應錯誤。`); return; }
+  if (item.size && item.size!==file.size) { toast('檔案大小與原素材不同，請選取原始影片。'); return; }
+  item.blob=file; item.fileName=file.name; item.size=file.size; item.lastModified=file.lastModified;
+  delete item.needsRelink; await persistMedia(item); await persistFile(item); data.selected=null; await selectMedia(item.id); if (!item.fileNotSaved) toast('已重新連結影片，原有筆記已保留。');
+};
+$('rename-button').onclick = () => { $('rename-title').value=current()?.title || ''; $('rename-dialog').showModal(); };
+$('cancel-rename').onclick = () => $('rename-dialog').close();
+$('rename-form').onsubmit = async event => { event.preventDefault(); const item=current(); const title=$('rename-title').value.trim(); if (!item || !title) return; item.title=title; await persistMedia(item); $('selected-title').textContent=title; renderLibrary(); renderNotes(); $('rename-dialog').close(); };
+$('media-search').oninput = renderLibrary;
+$('note-search').oninput = renderNotes;
+document.querySelectorAll('[data-view-button]').forEach(button => button.onclick = () => showView(button.dataset.viewButton));
+document.querySelector('.brand').onclick = event => { event.preventDefault(); showView('workspace'); };
+$('backup-button').onclick = () => $('data-dialog').showModal();
+$('help-button').onclick = () => $('help-dialog').showModal();
+
+function download(content, type, filename) {
+  const url = URL.createObjectURL(new Blob([content], {type}));
+  const link=document.createElement('a'); link.href=url; link.download=filename; document.body.append(link); link.click(); link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 120000);
+}
+function exportJson() {
+  const media = data.media.map(item => { const {blob,notSaved,fileNotSaved,...meta}=item; return meta; });
+  const notes = data.notes.map(note => { const {notSaved,...row}=note; return row; });
+  download(JSON.stringify({format:'frame-notes',version:1,exportedAt:date(),media,notes},null,2), 'application/json', `映記備份-${date().slice(0,10)}.json`);
+  toast('已準備 JSON 備份；請另行保存原始影片。');
+}
+function exportCsv() {
+  if (!data.notes.length) { toast('目前沒有可匯出的筆記。'); return; }
+  download(notesCsv(data.media,data.notes),'text/csv;charset=utf-8',`映記研究筆記-${date().slice(0,10)}.csv`);
+}
+$('export-json').onclick=exportJson;
+$('export-csv').onclick=exportCsv;
+$('csv-button').onclick=exportCsv;
+$('import-json').onclick=() => { $('data-dialog').close(); $('backup-input').click(); };
+$('backup-input').onchange=async event => {
+  const file=event.target.files[0]; event.target.value=''; if (!file) return;
+  try {
+    if (file.size>5*1024*1024) throw new Error('備份檔案過大，請使用 5 MB 以內的映記 JSON。');
+    const backup=validateBackup(JSON.parse(await file.text()));
+    const mediaIds=new Set(data.media.map(item=>item.id)); const noteIds=new Set(data.notes.map(item=>item.id));
+    const newMedia=backup.media.filter(item=>!mediaIds.has(item.id)).map(item=>({...item,needsRelink:item.kind==='file'})); const newNotes=backup.notes.filter(item=>!noteIds.has(item.id));
+    if (!database) throw new Error('此瀏覽器無法保存備份，請使用一般 Safari 分頁。');
+    await new Promise((resolve,reject)=>{
+      const tx=database.transaction(['media','notes'],'readwrite');
+      newMedia.forEach(item=>tx.objectStore('media').put(item)); newNotes.forEach(item=>tx.objectStore('notes').put(item));
+      tx.oncomplete=resolve; tx.onabort=()=>reject(new Error('空間不足或匯入失敗，原有資料已保留。')); tx.onerror=()=>{};
+    });
+    data.media.push(...newMedia); data.notes.push(...newNotes); renderLibrary(); renderNotes();
+    if (!data.selected && data.media[0]) await selectMedia(data.media[0].id);
+    toast(`已合併 ${newMedia.length} 份素材與 ${newNotes.length} 則筆記。本機影片請重新連結。`);
+  } catch(error) { toast(error instanceof SyntaxError ? '檔案不是有效的 JSON 備份。' : error.message); }
+};
+
+document.addEventListener('dragover',event=>event.preventDefault());
+document.addEventListener('drop',event=>{ event.preventDefault(); if (event.dataTransfer?.files.length) void importFiles([...event.dataTransfer.files]); });
+
+async function init() {
+  renderLibrary(); renderNotes();
+  try {
+    database=await openDatabase();
+    [data.media,data.notes]=await Promise.all([all('media'),all('notes')]);
+    // A data backup is never treated as markup or executable code.
+    renderLibrary(); renderNotes();
+    let selected;
+    try { selected=localStorage.getItem('frame-notes-selected'); } catch {}
+    const first=data.media.find(item=>item.id===selected) || data.media[0];
+    if (first) await selectMedia(first.id);
+  } catch { toast('目前瀏覽器無法保存資料；仍可試用，離開前請匯出筆記備份。'); }
+  if (false && 'serviceWorker' in navigator && /^https?:$/.test(location.protocol) && !location.search.includes('no-sw')) {
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+}
+void init();
+</script>
+</body>
+</html>
