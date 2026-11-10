@@ -37,317 +37,136 @@ jobs:
         shell: bash
         run: |
           node --input-type=module <<'HGHUB_BUILD'
+          // Run only on a Mac / GitHub macOS runner. Requires the generated iOS project.
+          // Tauri CLI 2.10.1 needs a live options server during Xcode's Rust build phase.
+          // `ios build --open` runs the frontend build and keeps that server alive; Xcode
+          // then builds for a real iPhone with signing disabled. Signing happens locally.
           import { spawn } from "node:child_process";
           import { createWriteStream } from "node:fs";
           import { once } from "node:events";
-          import {
-            access, cp, mkdir, mkdtemp,
-            readFile, readdir, writeFile
-          } from "node:fs/promises";
+          import { access, appendFile, cp, mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
           import { join } from "node:path";
           import { tmpdir } from "node:os";
 
           if (process.platform !== "darwin") {
-            throw new Error("This script needs macOS and Xcode.");
+            throw new Error("This script needs macOS and Xcode. On Windows, run the iPhone - unsigned IPA GitHub workflow.");
           }
-
           const root = process.cwd();
           const output = join(root, "artifacts", "ios");
           const generated = join(root, "src-tauri", "gen", "apple");
-
-          const config = JSON.parse(
-            await readFile(
-              join(root, "src-tauri", "tauri.conf.json"),
-              "utf8"
-            )
-          );
-
-          const pkg = JSON.parse(
-            await readFile(join(root, "package.json"), "utf8")
-          );
-
+          const config = JSON.parse(await readFile(join(root, "src-tauri", "tauri.conf.json"), "utf8"));
+          const pkg = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
           if (pkg.devDependencies["@tauri-apps/cli"] !== "2.10.1") {
-            throw new Error(
-              "Review this workflow before changing the Tauri CLI version."
-            );
+            throw new Error("Review this workflow against the new Tauri CLI before changing its pinned version.");
           }
-
           await access(generated);
           await mkdir(output, { recursive: true });
-
-          const env = {
-            ...process.env,
-            CI: "true",
-            FORCE_COLOR: ""
+          const packagingLog = join(output, "packaging.log");
+          let stage = "prepare";
+          await writeFile(packagingLog, "stage: prepare\n");
+          const setStage = async name => {
+            stage = name;
+            await appendFile(packagingLog, `stage: ${name}\n`);
+            console.log(`iPhone build stage: ${name}`);
           };
-
-          const run = (command, args, options = {}) =>
-            new Promise((resolveRun, reject) => {
-              const child = spawn(command, args, {
-                cwd: root,
-                env,
-                ...options
-              });
-
-              let stdout = "";
-              child.stdout?.on("data", data => {
-                stdout += data;
-              });
-
-              child.on("error", reject);
-              child.on("exit", (code, signal) => {
-                if (code === 0) {
-                  resolveRun(stdout);
-                } else {
-                  reject(
-                    new Error(
-                      `${command} failed (${code ?? signal})`
-                    )
-                  );
-                }
-              });
-            });
-
-          const exists = path =>
-            access(path).then(() => true, () => false);
-
-          const addrPath = join(
-            tmpdir(),
-            `${config.identifier}-server-addr`
-          );
-
-          if (await exists(addrPath)) {
-            throw new Error(
-              "An existing Tauri session was detected."
-            );
-          }
-
-          const log = createWriteStream(
-            join(output, "tauri.log")
-          );
-
-          const tauri = spawn(
-            "pnpm",
-            ["tauri", "ios", "build", "--ci", "--open"],
-            {
-              cwd: root,
-              env,
-              detached: true,
-              stdio: ["ignore", "pipe", "pipe"]
-            }
-          );
-
-          let launchError;
-          tauri.on("error", error => {
-            launchError = error;
+          // Tauri's Xcode phase expands FORCE_COLOR as an optional command-line flag.
+          // A numeric value becomes an extra architecture (for example `0 arm64`).
+          const env = { ...process.env, CI: "true", FORCE_COLOR: "" };
+          const run = (command, args, options = {}) => new Promise((resolveRun, reject) => {
+            const child = spawn(command, args, { cwd: root, env, ...options });
+            let stdout = "";
+            let stderr = "";
+            child.stdout?.on("data", data => { stdout += data; });
+            child.stderr?.on("data", data => { stderr = (stderr + data).slice(-12000); });
+            child.on("error", reject);
+            // Wait until stdout/stderr close, so short plutil responses are fully read.
+            child.on("close", (code, signal) => code === 0 ? resolveRun(stdout) : reject(new Error(`${command} failed (${code ?? signal}): ${stderr.trim() || stdout.trim().slice(-12000) || "see command log"}`)));
           });
-
+          const exists = path => access(path).then(() => true, () => false);
+          const addrPath = join(tmpdir(), `${config.identifier}-server-addr`);
+          // Each CI job has a fresh temp directory. Refuse an ambiguous local stale file.
+          if (await exists(addrPath)) throw new Error(`Existing Tauri session detected: ${addrPath}. Close that session before retrying.`);
+          const log = createWriteStream(join(output, "tauri.log"));
+          const tauri = spawn("pnpm", ["tauri", "ios", "build", "--ci", "--open"], {
+            cwd: root, env, detached: true, stdio: ["ignore", "pipe", "pipe"],
+          });
+          let launchError;
+          tauri.on("error", error => { launchError = error; });
           tauri.stdout.pipe(log, { end: false });
           tauri.stderr.pipe(log, { end: false });
           tauri.stdout.pipe(process.stdout);
           tauri.stderr.pipe(process.stderr);
-
           try {
+            await setStage("tauri-preparation");
             const deadline = Date.now() + 10 * 60_000;
-
             while (!(await exists(addrPath))) {
               if (launchError) throw launchError;
-
-              if (tauri.exitCode !== null) {
-                throw new Error(
-                  "Tauri preparation failed; see tauri.log."
-                );
-              }
-
-              if (Date.now() > deadline) {
-                throw new Error(
-                  "Tauri preparation timed out; see tauri.log."
-                );
-              }
-
-              await new Promise(resolveWait =>
-                setTimeout(resolveWait, 500)
-              );
+              if (tauri.exitCode !== null) throw new Error("Tauri preparation failed; see tauri.log.");
+              if (Date.now() > deadline) throw new Error("Tauri preparation timed out; see tauri.log.");
+              await new Promise(resolveWait => setTimeout(resolveWait, 500));
             }
-
+            // The address file is written after the production frontend and CLI options
+            // are ready. Keep the Tauri process alive until Xcode finishes its Rust phase.
             await access(join(root, "dist", "index.html"));
-
             const entries = await readdir(generated);
-            const workspace = entries.find(name =>
-              name.endsWith(".xcworkspace")
-            );
-            const project = entries.find(name =>
-              name.endsWith(".xcodeproj")
-            );
-
-            if (!workspace && !project) {
-              throw new Error(
-                "No generated Xcode workspace/project found."
-              );
-            }
-
-            const selector = workspace
-              ? ["-workspace", join(generated, workspace)]
-              : ["-project", join(generated, project)];
-
-            const listing = JSON.parse(
-              await run(
-                "xcodebuild",
-                [...selector, "-list", "-json"],
-                { stdio: ["ignore", "pipe", "inherit"] }
-              )
-            );
-
-            const schemes =
-              (listing.workspace ?? listing.project)?.schemes ?? [];
-
-            const candidates = schemes.filter(name =>
-              name.endsWith("_iOS")
-            );
-
-            if (candidates.length !== 1) {
-              throw new Error(
-                `Expected one iOS scheme; found ${JSON.stringify(schemes)}`
-              );
-            }
-
+            const workspace = entries.find(name => name.endsWith(".xcworkspace"));
+            const project = entries.find(name => name.endsWith(".xcodeproj"));
+            if (!workspace && !project) throw new Error("No generated Xcode workspace/project found.");
+            const selector = workspace ? ["-workspace", join(generated, workspace)] : ["-project", join(generated, project)];
+            await setStage("xcode-project-inspection");
+            const listing = JSON.parse(await run("xcodebuild", [...selector, "-list", "-json"], { stdio: ["ignore", "pipe", "inherit"] }));
+            const schemes = (listing.workspace ?? listing.project)?.schemes ?? [];
+            const candidates = schemes.filter(name => name.endsWith("_iOS"));
+            if (candidates.length !== 1) throw new Error(`Expected one iOS scheme; found ${JSON.stringify(schemes)}`);
             const derived = join(output, "DerivedData");
-
-            const xcodeArgs = [
-              ...selector,
-              "-scheme", candidates[0],
-              "-configuration", "release",
-              "-sdk", "iphoneos",
-              "-destination", "generic/platform=iOS",
-              "-derivedDataPath", derived,
-              "ARCHS=arm64",
-              "CODE_SIGNING_ALLOWED=NO",
-              "CODE_SIGNING_REQUIRED=NO",
-              "CODE_SIGN_IDENTITY=",
-              "DEVELOPMENT_TEAM=",
-              "build"
-            ];
-
-            const buildLog = createWriteStream(
-              join(output, "xcodebuild.log")
-            );
-
+            const xcodeArgs = [...selector, "-scheme", candidates[0], "-configuration", "release",
+              "-sdk", "iphoneos", "-destination", "generic/platform=iOS", "-derivedDataPath", derived,
+              "ARCHS=arm64", "CODE_SIGNING_ALLOWED=NO", "CODE_SIGNING_REQUIRED=NO",
+              "CODE_SIGN_IDENTITY=", "DEVELOPMENT_TEAM=", "build"];
+            const buildLog = createWriteStream(join(output, "xcodebuild.log"));
             await once(buildLog, "open");
-
+            await setStage("native-compilation");
             try {
-              await run("xcodebuild", xcodeArgs, {
-                stdio: ["ignore", buildLog, buildLog]
-              });
-            } finally {
-              buildLog.end();
-            }
-
-            const products = join(
-              derived,
-              "Build",
-              "Products",
-              "release-iphoneos"
-            );
-
-            const apps = (await readdir(products)).filter(name =>
-              name.endsWith(".app")
-            );
-
-            if (apps.length !== 1) {
-              throw new Error(
-                `Expected one device app, found ${apps.length}`
-              );
-            }
-
+              await run("xcodebuild", xcodeArgs, { stdio: ["ignore", buildLog, buildLog] });
+            } finally { buildLog.end(); }
+            await appendFile(packagingLog, "Native Xcode build succeeded.\n");
+            await setStage("locate-device-app");
+            const products = join(derived, "Build", "Products", "release-iphoneos");
+            const apps = (await readdir(products)).filter(name => name.endsWith(".app"));
+            if (apps.length !== 1) throw new Error(`Expected one device app, found ${apps.length}`);
             const app = join(products, apps[0]);
             const plist = join(app, "Info.plist");
-
-            const platform = (
-              await run("plutil", [
-                "-extract",
-                "CFBundleSupportedPlatforms.0",
-                "raw",
-                "-o", "-",
-                plist
-              ])
-            ).trim();
-
-            if (platform !== "iPhoneOS") {
-              throw new Error(
-                `Refusing to package a non-device app (${platform})`
-              );
-            }
-
-            const executable = (
-              await run("plutil", [
-                "-extract",
-                "CFBundleExecutable",
-                "raw",
-                "-o", "-",
-                plist
-              ])
-            ).trim();
-
-            await run("lipo", [
-              "-verify_arch",
-              "arm64",
-              join(app, executable)
-            ]);
-
-            const stage = await mkdtemp(
-              join(output, "package-")
-            );
-
+            await setStage("platform-validation");
+            const platform = (await run("plutil", ["-extract", "CFBundleSupportedPlatforms.0", "raw", "-o", "-", plist])).trim();
+            if (platform !== "iPhoneOS") throw new Error(`Refusing to package a non-device app (${platform})`);
+            await setStage("executable-validation");
+            const executable = (await run("plutil", ["-extract", "CFBundleExecutable", "raw", "-o", "-", plist])).trim();
+            await setStage("architecture-validation");
+            // Apple's lipo consumes ALL arguments after -verify_arch as architecture names.
+            // Input files must precede that option (Apple cctools man/lipo.1).
+            await run("lipo", [join(app, executable), "-verify_arch", "arm64"]);
+            await setStage("ipa-packaging");
+            const stage = await mkdtemp(join(output, "package-"));
             const payload = join(stage, "Payload");
             await mkdir(payload);
-
-            await cp(app, join(payload, apps[0]), {
-              recursive: true,
-              verbatimSymlinks: true
-            });
-
-            const ipa = join(
-              output,
-              `HGhub_${pkg.version}_arm64_unsigned.ipa`
-            );
-
-            await run("ditto", [
-              "-c",
-              "-k",
-              "--keepParent",
-              payload,
-              ipa
-            ]);
-
-            const commit = (
-              await run("git", ["rev-parse", "HEAD"])
-            ).trim();
-
-            await writeFile(
-              join(output, "build-info.json"),
-              JSON.stringify(
-                {
-                  commit,
-                  version: pkg.version,
-                  signing: "unsigned; must be signed locally before installation",
-                  platform,
-                  architecture: "arm64",
-                  builtAt: new Date().toISOString()
-                },
-                null,
-                2
-              ) + "\n"
-            );
-
-            console.log(
-              `Created ${ipa}. Sign locally before installing.`
-            );
+            await cp(app, join(payload, apps[0]), { recursive: true, verbatimSymlinks: true });
+            const ipa = join(output, `HGhub_${pkg.version}_arm64_unsigned.ipa`);
+            await run("ditto", ["-c", "-k", "--keepParent", payload, ipa]);
+            await setStage("build-metadata");
+            const commit = (await run("git", ["rev-parse", "HEAD"])).trim();
+            await writeFile(join(output, "build-info.json"), JSON.stringify({
+              commit, version: pkg.version, signing: "unsigned; must be signed locally before installation",
+              platform, architecture: "arm64", builtAt: new Date().toISOString(),
+            }, null, 2) + "\n");
+            await setStage("complete");
+            console.log(`Created ${ipa}. Sign with your own account on Windows before installing.`);
+          } catch (error) {
+            const details = `error: [${stage}] ${error.stack || error.message || String(error)}\n`;
+            await appendFile(packagingLog, details);
+            console.error(details);
+            throw error;
           } finally {
-            if (tauri.pid) {
-              try {
-                process.kill(-tauri.pid, "SIGTERM");
-              } catch {}
-            }
+            if (tauri.pid) { try { process.kill(-tauri.pid, "SIGTERM"); } catch {} }
             log.end();
           }
           HGHUB_BUILD
@@ -363,7 +182,7 @@ jobs:
           import { randomUUID } from 'node:crypto';
 
           const outcome = process.env.BUILD_OUTCOME || 'unknown';
-          const files = ['artifacts/ios/tauri.log', 'artifacts/ios/xcodebuild.log'];
+          const files = ['artifacts/ios/tauri.log', 'artifacts/ios/xcodebuild.log', 'artifacts/ios/packaging.log'];
           const reports = [];
           const errorPattern = /\berror(?:\[[A-Z]\d+\])?\s*:|\bfatal error\s*:|\bError \[tauri_cli|Arch specified by Xcode was invalid/i;
           const sensitiveSetting = /(?:TOKEN|PASSWORD|SECRET|AUTHORIZATION|API_KEY)\s*[:=]/i;
